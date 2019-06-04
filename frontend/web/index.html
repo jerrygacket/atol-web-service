@@ -31,14 +31,10 @@
     <!--кнопка печать чека возврата-->
 </div>
 <script>
-    fetch('https://yiilessons.xyz/main/getgoods.json', {
-      method: 'GET',
-      mode: 'no-cors'
-    }).then((response) => response.json()).then((data) => {
-      console.log(data);
-    }).catch((error) => {
-      console.log(error);
-    });
+    fetch('https://yiilessons.xyz/main/getgoods.json')
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
     // fetch('https://yiilessons.xyz/main/status.json', { mode: 'no-cors' }).then(response => response.json()).then((data) => {
     //   console.log(data);
     // });
