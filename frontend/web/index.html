@@ -5,18 +5,46 @@
     <title>ATOL-WEB-SERVICE</title>
 </head>
 <body>
-<div id="app">
-    {{ message }}
+<!--<div id="app">-->
+    <!--{{ message }}-->
+<!--</div>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+<!--<script>-->
+  <!--new Vue({-->
+    <!--el: '#app',-->
+    <!--data: {-->
+      <!--message: 'Hello Vue!'-->
+    <!--}-->
+  <!--})-->
+<!--</script>-->
+<div class="container">
+    <!--строка адреса принтера-->
+    <input id="printer_address" type="text">
+    <!--кнопка подключить\отключить-->
+    <!--статус подключено\отключено-->
+    <!--кнопка смены открыть \ закрыть-->
+    <!--статус смены открыта \ закрыта-->
+    <!--фио кассира (оператора)-->
+    <!--список товаров основной-->
+    <!--список товаров для печати в чеке (с количеством)-->
+    <!--кнопка печать чека продажи-->
+    <!--кнопка печать чека возврата-->
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script>
-  new Vue({
-    el: '#app',
-    data: {
-      message: 'Hello Vue!'
-    }
-  })
+    fetch('https://yiilessons.xyz/main/getgoods.json', {
+      method: 'GET',
+      mode: 'no-cors'
+    }).then((response) => response.json()).then((data) => {
+      console.log(data);
+    }).catch((error) => {
+      console.log(error);
+    });
+    // fetch('https://yiilessons.xyz/main/status.json', { mode: 'no-cors' }).then(response => response.json()).then((data) => {
+    //   console.log(data);
+    // });
+    // fetch('https://yiilessons.xyz/main/openShift.json', { mode: 'no-cors' }).then(response => response.json()).then((data) => {
+    //   console.log(data);
+    // });
 </script>
 </body>
 </html>
