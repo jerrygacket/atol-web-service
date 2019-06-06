@@ -3,20 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <title>ATOL-WEB-SERVICE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .printersInfo {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 30px 0;
+        }
+        .printersAll,
+        .printer_connect,
+        .printer_connect_info{
+            margin: 0;
+            width: 33%;
+        }
+        .printer_connect_info{
+            padding: 6px 12px;
+            border: thin solid cadetblue;
+        }
+        .goodsInfo {
+            display: flex;
+            align-items: flex-end;
+            padding: 30px 0;
+        }
+        .goodsAll {
+            width: 33%;
+            height: fit-content;
+            min-height: 150px;
+            border: thin solid cadetblue;
+            margin-right: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .goodsGet {
+            width: 33%;
+        }
+
+    </style>
 </head>
 <body>
-<div id="app">
-    {{ message }}
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <div class="container-fluid">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="#">ATOL</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                    </ul>
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="text" placeholder="Login" aria-label="Search">
+                        <input class="form-control mr-sm-2" type="password" placeholder="Password" aria-label="Search">
+                        <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Log in</button>
+                    </form>
+                </div>
+            </nav>
+            <div class="printersInfo">
+                <div class="printersAll">
+                    <label for="exampleFormControlSelect1">Cписок всех принтеров</label>
+                    <select class="form-control" id="exampleFormControlSelect1">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                <div class="printer_connect">
+                    <button class="btn btn-info col-md" type="submit">Подключиться к принтеру</button>
+                </div>
+                <p class="printer_connect_info">Состояние подключения</p>
+            </div>
+            <div class="goodsInfo">
+                <div class="goodsAll">
+                    Здесь выводится  список товаров для чека
+                </div>
+                <div class="goodsGet">
+                    <button class="btn btn-info col-md" type="submit">Загрузить товары</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--<div id="app">-->
+    <!--{{ message }}-->
+<!--</div>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+<!--<script>-->
+  <!--new Vue({-->
+    <!--el: '#app',-->
+    <!--data: {-->
+      <!--message: 'Hello Vue!'-->
+    <!--}-->
+  <!--})-->
+<!--</script>-->
+<!--<div class="container">-->
+    <!--строка адреса принтера-->
+    <!--<input id="printer_address" type="text">-->
+    <!--кнопка подключить\отключить-->
+    <!--статус подключено\отключено-->
+    <!--кнопка смены открыть \ закрыть-->
+    <!--статус смены открыта \ закрыта-->
+    <!--фио кассира (оператора)-->
+    <!--список товаров основной-->
+    <!--список товаров для печати в чеке (с количеством)-->
+    <!--кнопка печать чека продажи-->
+    <!--кнопка печать чека возврата-->
+<!--</div>-->
 <script>
-  new Vue({
-    el: '#app',
-    data: {
-      message: 'Hello Vue!'
-    }
-  })
+    fetch('https://yiilessons.xyz/main/getGoods')
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
+    // fetch('https://yiilessons.xyz/main/status.json', { mode: 'no-cors' }).then(response => response.json()).then((data) => {
+    //   console.log(data);
+    // });
+    // fetch('https://yiilessons.xyz/main/openShift.json', { mode: 'no-cors' }).then(response => response.json()).then((data) => {
+    //   console.log(data);
+    // });
 </script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>
