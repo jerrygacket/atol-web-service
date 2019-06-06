@@ -83,11 +83,11 @@
                 <p class="printer_connect_info">Состояние подключения</p>
             </div>
             <div class="goodsInfo">
-                <div class="goodsAll">
+                <div id="goodsAll" class="goodsAll">
                     Здесь выводится  список товаров для чека
                 </div>
                 <div class="goodsGet">
-                    <button class="btn btn-info col-md" type="submit">Загрузить товары</button>
+                    <button id="goodsButton" class="btn btn-info col-md" type="submit" >Загрузить товары</button>
                 </div>
             </div>
         </div>
@@ -118,10 +118,17 @@
     <!--кнопка печать чека возврата-->
 <!--</div>-->
 <script>
-    fetch('https://yiilessons.xyz/main/getGoods')
+  document.getElementById('goodsButton').addEventListener('click', () => getGoods());
+  async function getGoods() {
+    let goods = '';
+    await fetch('https://yiilessons.xyz/main/getGoods')
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => goods = data.result)
       .catch((error) => console.log(error));
+    console.log(goods);
+    goods = goods.map(el => `name: ${el.name}, id: ${el.product_id}, price: ${el.price}\n`);
+    document.getElementById('goodsAll').textContent = goods;
+  }
     // fetch('https://yiilessons.xyz/main/status.json', { mode: 'no-cors' }).then(response => response.json()).then((data) => {
     //   console.log(data);
     // });
