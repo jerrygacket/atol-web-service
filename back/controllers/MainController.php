@@ -31,11 +31,13 @@ class MainController extends Controller
     public function behaviors()
     {
         return ArrayHelper::merge([
-            [
+            'corsFilter'  => [
                 'class' => Cors::class,
                 'cors' => [
                     'Origin' => ['*'],
                     'Access-Control-Request-Method' => ['POST','GET', 'HEAD', 'OPTIONS'],
+                    'Access-Control-Allow-Credentials' => null,
+                    'Access-Control-Max-Age' => 3600,
                 ],
             ],
         ], parent::behaviors());

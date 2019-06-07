@@ -33,10 +33,11 @@ class MainGetGoodsAction extends Action
             ];
         }
 
-        Yii::$app->response->headers->add('Access-Control-Allow-Origin', '*');
-        Yii::$app->response->data = Json::encode($result);
+        $object = (object) $result;
+//        return json_encode($object);
+        Yii::$app->response->data = $object; //Json::encode($object);
         Yii::$app->response->send();
-        //return Json::encode($result);
+//        return Json::encode($result);
         Yii::$app->end();
     }
 }

@@ -27,7 +27,9 @@ class MainStatusAction extends Action
             ];
         }
 
-        Yii::$app->response->data = Json::encode($result);
+        $object = (object) $result;
+//        return json_encode($object);
+        Yii::$app->response->data = $object; //Json::encode($object);
         Yii::$app->response->send();
 
         Yii::$app->end();
