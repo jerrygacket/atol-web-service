@@ -8,27 +8,37 @@
     <style>
         .printersInfo {
             display: flex;
-            justify-content: space-between;
             align-items: flex-end;
             padding: 30px 0;
         }
         .printersAll,
-        .printer_connect,
-        .printer_connect_info{
-            margin: 0;
+        .printer_connect{
             width: 33%;
         }
-        .printer_connect_info{
-            padding: 6px 12px;
-            border: thin solid cadetblue;
+        .printersAll {
+            margin-right: 5px;
         }
         .goodsInfo {
             display: flex;
             align-items: flex-end;
             padding: 30px 0;
         }
+        .userInfo {
+            display: flex;
+            align-items: flex-end;
+            padding: 30px 0;
+        }
+
+        .user {
+            width: 40%;
+            height: fit-content;
+            border: thin solid cadetblue;
+            margin-right: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
         .goodsAll {
-            width: 33%;
+            width: 40%;
             height: fit-content;
             min-height: 150px;
             border: thin solid cadetblue;
@@ -38,6 +48,17 @@
         }
         .goodsGet {
             width: 33%;
+        }
+        .success {
+            background: #00CC00;
+        }
+        .fail {
+            background: red;
+        }
+        .goodsList {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
         }
 
     </style>
@@ -78,16 +99,21 @@
                     </select>
                 </div>
                 <div class="printer_connect">
-                    <button class="btn btn-info col-md" type="submit">Подключиться к принтеру</button>
+                    <button id="printConnect" class="btn btn-info col-md" type="submit">Подключиться к принтеру</button>
                 </div>
-                <p class="printer_connect_info">Состояние подключения</p>
             </div>
             <div class="goodsInfo">
-                <div class="goodsAll">
+                <div id="goodsAll" class="goodsAll">
                     Здесь выводится  список товаров для чека
                 </div>
                 <div class="goodsGet">
-                    <button class="btn btn-info col-md" type="submit">Загрузить товары</button>
+                    <button id="goodsButton" class="btn btn-info col-md" type="submit" >Загрузить товары</button>
+                </div>
+            </div>
+            <div class = "userInfo">
+                <div class = "user"> Кассир:
+                    <div class="user_name">Иван Иванов</div>
+                    <small>(будет подтягивать из авторизации)</small>
                 </div>
             </div>
         </div>
@@ -105,29 +131,79 @@
   <!--})-->
 <!--</script>-->
 <!--<div class="container">-->
-    <!--строка адреса принтера-->
-    <!--<input id="printer_address" type="text">-->
-    <!--кнопка подключить\отключить-->
-    <!--статус подключено\отключено-->
-    <!--кнопка смены открыть \ закрыть-->
-    <!--статус смены открыта \ закрыта-->
-    <!--фио кассира (оператора)-->
-    <!--список товаров основной-->
-    <!--список товаров для печати в чеке (с количеством)-->
     <!--кнопка печать чека продажи-->
     <!--кнопка печать чека возврата-->
 <!--</div>-->
 <script>
-    fetch('https://yiilessons.xyz/main/getGoods')
+  document.getElementById('goodsButton').addEventListener('click', () => getGoods());
+  document.getElementById('printConnect').addEventListener('click', () => printConnect());
+
+  async function getGoods() {
+    let goods = [];
+    await fetch('https://yiilessons.xyz/main/getGoods')
       .then((response) => response.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.log(error));
-    // fetch('https://yiilessons.xyz/main/status.json', { mode: 'no-cors' }).then(response => response.json()).then((data) => {
-    //   console.log(data);
-    // });
-    // fetch('https://yiilessons.xyz/main/openShift.json', { mode: 'no-cors' }).then(response => response.json()).then((data) => {
-    //   console.log(data);
-    // });
+      .then((data) => {
+        goods = data.result;
+      }).catch((error) => console.log(error));
+
+    var goodsAll = document.getElementById('goodsAll');
+    goodsAll.textContent = "";
+
+    var goodsList = document.createElement('ul');
+    goodsList.className = "goodsList";
+    var goodsSum = document.createElement('div');
+    var sum = 0;
+    goodsAll.appendChild(goodsList);
+    goodsAll.appendChild(goodsSum);
+
+    goods.forEach((el, i) => {
+        var elemLi = document.createElement('li');
+        elemLi.textContent = `${el.name} -- ${el.price}`;
+        goodsList.appendChild(elemLi);
+
+        sum += +(el.price);
+        goodsSum.textContent = `Итого: ${ sum } руб.`;
+    });
+
+
+  }
+
+  async function printConnect() {
+    let isConnect = false;
+    await fetch('https://yiilessons.xyz/main/status')
+      .then(response => response.json())
+      .then((data) => {
+        if (!data.error) isConnect = true;
+        console.log('status', data);
+      }).catch((error) => console.log(error));
+    if (isConnect) {
+      document.getElementById('printConnect').classList.add('success');
+      document.getElementById('printConnect').textContent="Подключено";
+    } else {
+      document.getElementById('printConnect').classList.add('fail');
+      document.getElementById('printConnect').textContent="Ошибка";
+    }
+  }
+
+  fetch('https://yiilessons.xyz/main/print', { method: 'POST' })
+    .then(response => response.json())
+    .then((data) => {
+      console.log('print', data);
+    }).catch((error) => console.log(error));
+  //
+  fetch('https://yiilessons.xyz/main/openShift', { method: 'POST' })
+    .then(response => response.json())
+    .then((data) => {
+      console.log('openShift', data);
+    });
+
+  // closeShift пока не работает. (Ошибка 500):
+  // fetch('https://yiilessons.xyz/main/closeShift', { method: 'POST' })
+  //   .then(response => response.json())
+  //   .then((data) => {
+  //     console.log('closeShift', data);
+  //   }).catch((error) => console.log(error));
+
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
