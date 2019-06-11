@@ -3,12 +3,12 @@
 
 namespace app\controllers\actions;
 
-use Yii;
-use yii\base\Action;
-use yii\helpers\Json;
-use yii\web\Response;
 
-class MainGetGoodsAction extends Action
+use app\base\BasicAction;
+use Yii;
+
+
+class MainGetGoodsAction extends BasicAction
 {
     public function run()
     {
@@ -16,7 +16,6 @@ class MainGetGoodsAction extends Action
 
         if (Yii::$app->request->isGet) {
             //TODO: заменить на получение товаров из ДБ
-
             $goods = [];
             for ($i=0;$i<10;$i++) {
                 $goods[] = [
@@ -25,7 +24,6 @@ class MainGetGoodsAction extends Action
                     'price' => $i+5,
                 ];
             }
-            Yii::$app->response->format=Response::FORMAT_JSON;
 
             $result = [
                 'result' => $goods,
@@ -33,11 +31,6 @@ class MainGetGoodsAction extends Action
             ];
         }
 
-        $object = (object) $result;
-//        return json_encode($object);
-        Yii::$app->response->data = $object; //Json::encode($object);
-        Yii::$app->response->send();
-//        return Json::encode($result);
-        Yii::$app->end();
+        $this->SendJsonResponse($result);
     }
 }

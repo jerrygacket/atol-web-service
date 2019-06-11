@@ -1,7 +1,12 @@
 <?php
 
+use app\components\PrinterComponent;
+
 $params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/db.php';
+$db = file_exists(__DIR__ . '/db_local.php')
+    ? (require __DIR__ . '/db_local.php')
+    : (require __DIR__ . '/db.php');
+
 
 $config = [
     'id' => 'basic',
@@ -12,6 +17,7 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'printer' => ['class'=>PrinterComponent::class,'nameClass'=>'\app\models\Printers'],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 't-jKpLCVyrvOpvY9zabj6h198MlqC2pI',
