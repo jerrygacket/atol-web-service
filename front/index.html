@@ -92,14 +92,25 @@
 <script>
   document.getElementById('FormPrinterSelect').disabled = true;
   document.getElementById('printConnect').disabled = true;
+  let printersList = false;
   [...document.getElementsByClassName('valid-name')].forEach(el => {
-    el.addEventListener('change', () => {
+    el.addEventListener('change', async () => {
       let name = document.getElementById('name').value.trim();
       let surname = document.getElementById('surname').value.trim();
       if (name.length && surname.length) {
         document.getElementById('FormPrinterSelect').disabled = false;
         document.getElementById('printConnect').disabled = false;
-        document.getElementById('operatorInfo').textContent = `${name} ${surname}`
+        document.getElementById('operatorInfo').textContent = `${name} ${surname}`;
+        if (!printersList) {
+          let printers;
+          printers = await getPrinters();
+          printers.forEach(el => {
+            let option = document.createElement('option');
+            option.textContent = el.printer_name;
+            document.getElementById('FormPrinterSelect').appendChild(option);
+          });
+          printersList = true;
+        }
       }
     });
   });
@@ -109,7 +120,6 @@
     e.preventDefault();
     printConnect();
   });
-  document.getElementById('FormPrinterSelect').addEventListener('click', () => getPriters());
 
   async function getGoods() {
     let goods = [];
@@ -159,15 +169,18 @@
     }
   }
 
-  async function getPriters() {
-    await fetch('https://yiilessons.xyz/main/getPrinters', {
-      method: 'POST'
+  async function getPrinters() {
+    let printers = [];
+    await fetch('https://yiilessons.xyz/main/getPrinters?info[user_id]=some_id', {
+      method: 'GET'
     })
       .then(response => response.json())
-      .then ((data) => {
-        console.log('printers', data);
-      })
-
+      .then((data) => {
+        data.result.forEach((el, i) => {
+          printers.push(el);
+        })
+      });
+    return printers;
   }
 
 
@@ -184,12 +197,11 @@
       console.log('openShift', data);
     });
 
-  // closeShift пока не работает. (Ошибка 500):
-  // fetch('https://yiilessons.xyz/main/closeShift', { method: 'POST' })
-  //   .then(response => response.json())
-  //   .then((data) => {
-  //     console.log('closeShift', data);
-  //   }).catch((error) => console.log(error));
+  fetch('https://yiilessons.xyz/main/closeShift', { method: 'POST' })
+    .then(response => response.json())
+    .then((data) => {
+      console.log('closeShift', data);
+    }).catch((error) => console.log(error));
 
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
