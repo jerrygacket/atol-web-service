@@ -5,6 +5,7 @@ namespace app\components;
 
 
 use app\base\BasicComponent;
+use app\models\Printers;
 
 
 class PrinterComponent extends BasicComponent
@@ -12,7 +13,7 @@ class PrinterComponent extends BasicComponent
     public function getAll() {
         $model = $this->getModel();
 
-        return $model::find()->all();
+        return $model::find()->cache(10)->all();
     }
 
     /*
@@ -29,6 +30,36 @@ class PrinterComponent extends BasicComponent
     }
 
     public function createPrinter(&$model):bool {
+        return false;
+    }
+
+    public function editPrinter(&$model):bool {
+        return false;
+    }
+
+    /**
+     * @param $params
+     * @return mixed
+     * @var $model Printers
+     */
+    public function openShift($params) {
+        $model = $this->getModel();
+        $model->load($params);
+
+        return false;
+    }
+
+    public function closeShift($params) {
+        $model = $this->getModel();
+        $model->load($params);
+
+        return false;
+    }
+
+    public function printSellReceipt($params) {
+        $model = $this->getModel();
+        $model->load($params);
+
         return false;
     }
 }
