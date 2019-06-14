@@ -19,6 +19,7 @@ use yii\httpclient\Response;
 class Printers extends PrintersBase
 {
     public $client;
+    public $timeout;
 
     public function __construct($config = [])
     {
@@ -33,7 +34,35 @@ class Printers extends PrintersBase
                 'format' => Client::FORMAT_JSON
             ],
         ]);
+        $this->timeout = 30; //seconds
+        //TODO: get timeout from config
+    }
 
+    /**
+     * Generate uuid v4
+     *
+     * @return string
+     */
+    private function gen_uuid() {
+        return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            // 32 bits for "time_low"
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+
+            // 16 bits for "time_mid"
+            mt_rand( 0, 0xffff ),
+
+            // 16 bits for "time_hi_and_version",
+            // four most significant bits holds version number 4
+            mt_rand( 0, 0x0fff ) | 0x4000,
+
+            // 16 bits, 8 bits for "clk_seq_hi_res",
+            // 8 bits for "clk_seq_low",
+            // two most significant bits holds zero and one for variant DCE1.1
+            mt_rand( 0, 0x3fff ) | 0x8000,
+
+            // 48 bits for "node"
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+        );
     }
 
     /**
@@ -87,59 +116,73 @@ class Printers extends PrintersBase
      * @throws \yii\base\InvalidConfigException
      */
     private function checkStatus($uuid) {
-//        $not_ready = true;
-//        $this->error = 1;
-//        $counter = 0;
-//        while ($not_ready) {
-//            $response = $this->getData('/requests/'.$uuid);
-//            $not_ready = ($response['results'][0]['status'] != 'ready');
-//            sleep(1);
-//            $counter++;
-//            if ($counter > 30) {break;} //ждем 30 секунд и типа отваливаемся по таймауту
-//        }
-//        if ($not_ready) {
-//            return 'Timeout'.PHP_EOL;
-//        } else {
-//            $this->status = true;
-//            $this->error = $response['results'][0]['errorCode'] ?? 1;
-//            return $response;
-//        }
-        return false;
+        $ready = false;
+        $counter = 0;
+        while (!$ready) {
+            $response = $this->getData('/requests/'.$uuid);
+            $ready = ($response['results'][0]['status'] == 'ready');
+            sleep(1);
+            $counter++;
+            if ($counter > $this->timeout) {break;} //ждем 30 секунд и типа отваливаемся по таймауту
+        }
+        if (!$ready) {
+            return 'Timeout'.PHP_EOL;
+        } else {
+            $this->status = true;
+            $this->error = $response['results'][0]['errorCode'] ?? 1;
+        }
+        return $response;
+    }
+
+    /**
+     * Запрос состояния смены
+     *
+     * @return bool
+     * @throws \yii\base\InvalidConfigException
+     */
+    function isShiftOpen() {
+        $newId = $this->gen_uuid();
+        $task = [
+            'uuid' => $newId,
+            'request' => ['type' => 'getShiftStatus'],
+        ];
+
+        $response = $this->postData($task);
+        if (!empty($response)) {print_r($response);}
+        $response = $this->checkStatus($newId);
+
+        return (($response['results'][0]['result']['shiftStatus']['state'] ?? '') == 'opened');
     }
 
     //Открытие смены
-    function openShift() {
-//        if (!$this->connected) {
-//            echo 'Not connected'.PHP_EOL;
-//            return false;
-//        }
-//        if ($this->isShiftOpen()) {
-//            echo 'Shift is open'.PHP_EOL;
-//            return false;
-//        }
-//        if ($this->operator == '') {
-//            echo 'No operator'.PHP_EOL;
-//            return false;
-//        }
-//        $newId = exec('uuidgen -r');
-//        $task = array(
-//            'uuid' => $newId,
-//            'request' => array(
-//                'type' => 'openShift',
-//                'operator' => array(
-//                    'name' => $this->operator //Фамилия и должность оператора
-//                    //'vatin' => '123654789507' //ИНН оператора
-//                )
-//            )
-//        );
-//        $response = $this->postData($task);
-//        if (!empty($response)) {print_r($response);}
-//        $response = $this->checkStatus($newId);
-//        return $response;
+    public function openShift() {
+        if ($this->isShiftOpen()) {
+            echo 'Shift is open'.PHP_EOL;
+            return false;
+        }
+        if ($this->operator == '') {
+            echo 'No operator'.PHP_EOL;
+            return false;
+        }
+        $newId = exec('uuidgen -r');
+        $task = array(
+            'uuid' => $newId,
+            'request' => array(
+                'type' => 'openShift',
+                'operator' => array(
+                    'name' => $this->operator //Фамилия и должность оператора
+                    //'vatin' => '123654789507' //ИНН оператора
+                )
+            )
+        );
+        $response = $this->postData($task);
+        if (!empty($response)) {print_r($response);}
+        $response = $this->checkStatus($newId);
+        return $response;
     }
 
     //Закрытие смены
-    function closeShift() {
+    public function closeShift() {
 //        if (!$this->connected) {
 //            echo 'Not connected'.PHP_EOL;
 //            return false;
