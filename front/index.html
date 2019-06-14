@@ -5,63 +5,7 @@
     <title>ATOL-WEB-SERVICE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <style>
-        .printersInfo {
-            display: flex;
-            align-items: flex-end;
-            padding: 30px 0;
-        }
-        .printersAll,
-        .printer_connect{
-            width: 33%;
-        }
-        .printersAll {
-            margin-right: 5px;
-        }
-        .goodsInfo {
-            display: flex;
-            align-items: flex-end;
-            padding: 30px 0;
-        }
-        .userInfo {
-            display: flex;
-            align-items: flex-end;
-            padding: 30px 0;
-        }
-
-        .user {
-            width: 40%;
-            height: fit-content;
-            border: thin solid cadetblue;
-            margin-right: 5px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        .goodsAll {
-            width: 40%;
-            height: fit-content;
-            min-height: 150px;
-            border: thin solid cadetblue;
-            margin-right: 5px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        .goodsGet {
-            width: 33%;
-        }
-        .success {
-            background: #00CC00;
-        }
-        .fail {
-            background: red;
-        }
-        .goodsList {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-
-    </style>
+    <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
     <div class="container-fluid">
@@ -87,33 +31,44 @@
                     </form>
                 </div>
             </nav>
-            <div class="printersInfo">
-                <div class="printersAll">
-                    <label for="exampleFormControlSelect1">Cписок всех принтеров</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                </div>
-                <div class="printer_connect">
-                    <button id="printConnect" class="btn btn-info col-md" type="submit">Подключиться к принтеру</button>
-                </div>
+            <div class="operatorInfo">
+                <h4 class="operator_name">Введите данные оператора:</h4>
+                <form>
+                    <div class="form-row">
+                        <div class="col">
+                            <input id="name" type="text" class="form-control valid-name" placeholder="Имя">
+                        </div>
+                        <div class="col">
+                            <input id="surname" type="text" class="form-control valid-name" placeholder="Фамилия">
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="goodsInfo">
+            <div class="printersInfo">
+                <h4 class="printer_name">Выберете принтер из списка:</h4>
+                <form>
+                    <div class="form-row">
+                        <select class="form-control col" id="FormPrinterSelect">
+                            <!--<option>1</option>-->
+                            <!--<option>2</option>-->
+                            <!--<option>3</option>-->
+                            <!--<option>4</option>-->
+                            <!--<option>5</option>-->
+                        </select>
+                        <div class="printer_connect col">
+                            <button id="printConnect" class="btn btn-info col-md" type="submit">Подключиться к принтеру</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="goods" class="goodsInfo">
+                <h3 id="operatorInfo"></h3>
+                <br>
                 <div id="goodsAll" class="goodsAll">
                     Здесь выводится  список товаров для чека
                 </div>
                 <div class="goodsGet">
                     <button id="goodsButton" class="btn btn-info col-md" type="submit" >Загрузить товары</button>
-                </div>
-            </div>
-            <div class = "userInfo">
-                <div class = "user"> Кассир:
-                    <div class="user_name">Иван Иванов</div>
-                    <small>(будет подтягивать из авторизации)</small>
                 </div>
             </div>
         </div>
@@ -135,8 +90,36 @@
     <!--кнопка печать чека возврата-->
 <!--</div>-->
 <script>
+  document.getElementById('FormPrinterSelect').disabled = true;
+  document.getElementById('printConnect').disabled = true;
+  let printersList = false;
+  [...document.getElementsByClassName('valid-name')].forEach(el => {
+    el.addEventListener('change', async () => {
+      let name = document.getElementById('name').value.trim();
+      let surname = document.getElementById('surname').value.trim();
+      if (name.length && surname.length) {
+        document.getElementById('FormPrinterSelect').disabled = false;
+        document.getElementById('printConnect').disabled = false;
+        document.getElementById('operatorInfo').textContent = `${name} ${surname}`;
+        if (!printersList) {
+          let printers;
+          printers = await getPrinters();
+          printers.forEach(el => {
+            let option = document.createElement('option');
+            option.textContent = el.printer_name;
+            document.getElementById('FormPrinterSelect').appendChild(option);
+          });
+          printersList = true;
+        }
+      }
+    });
+  });
+
   document.getElementById('goodsButton').addEventListener('click', () => getGoods());
-  document.getElementById('printConnect').addEventListener('click', () => printConnect());
+  document.getElementById('printConnect').addEventListener('click', (e) => {
+    e.preventDefault();
+    printConnect();
+  });
 
   async function getGoods() {
     let goods = [];
@@ -146,18 +129,18 @@
         goods = data.result;
       }).catch((error) => console.log(error));
 
-    var goodsAll = document.getElementById('goodsAll');
+    let goodsAll = document.getElementById('goodsAll');
     goodsAll.textContent = "";
 
-    var goodsList = document.createElement('ul');
+    let goodsList = document.createElement('ul');
     goodsList.className = "goodsList";
-    var goodsSum = document.createElement('div');
-    var sum = 0;
+    let goodsSum = document.createElement('div');
+    let sum = 0;
     goodsAll.appendChild(goodsList);
     goodsAll.appendChild(goodsSum);
 
     goods.forEach((el, i) => {
-        var elemLi = document.createElement('li');
+        let elemLi = document.createElement('li');
         elemLi.textContent = `${el.name} -- ${el.price}`;
         goodsList.appendChild(elemLi);
 
@@ -179,11 +162,28 @@
     if (isConnect) {
       document.getElementById('printConnect').classList.add('success');
       document.getElementById('printConnect').textContent="Подключено";
+      document.getElementById('goods').style.display = 'flex';
     } else {
       document.getElementById('printConnect').classList.add('fail');
       document.getElementById('printConnect').textContent="Ошибка";
     }
   }
+
+  async function getPrinters() {
+    let printers = [];
+    await fetch('https://yiilessons.xyz/main/getPrinters?info[user_id]=some_id', {
+      method: 'GET'
+    })
+      .then(response => response.json())
+      .then((data) => {
+        data.result.forEach((el, i) => {
+          printers.push(el);
+        })
+      });
+    return printers;
+  }
+
+
 
   fetch('https://yiilessons.xyz/main/print', { method: 'POST' })
     .then(response => response.json())
@@ -197,12 +197,11 @@
       console.log('openShift', data);
     });
 
-  // closeShift пока не работает. (Ошибка 500):
-  // fetch('https://yiilessons.xyz/main/closeShift', { method: 'POST' })
-  //   .then(response => response.json())
-  //   .then((data) => {
-  //     console.log('closeShift', data);
-  //   }).catch((error) => console.log(error));
+  fetch('https://yiilessons.xyz/main/closeShift', { method: 'POST' })
+    .then(response => response.json())
+    .then((data) => {
+      console.log('closeShift', data);
+    }).catch((error) => console.log(error));
 
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
