@@ -4,20 +4,17 @@
 namespace app\controllers\actions;
 
 
+use app\base\BasicAction;
 use Yii;
-use yii\base\Action;
-use yii\helpers\Json;
-use yii\web\Response;
 
-class MainPrintReceiptAction extends Action
+
+class MainPrintReceiptAction extends BasicAction
 {
     public function run()
     {
         $result = ['error' => true,];
 
         if (Yii::$app->request->isPost) {
-            Yii::$app->response->format=Response::FORMAT_JSON;
-
             $result = [
                 'error'=>false,
                 'result'=>[
@@ -27,11 +24,6 @@ class MainPrintReceiptAction extends Action
             ];
         }
 
-        $object = (object) $result;
-//        return json_encode($object);
-        Yii::$app->response->data = $object; //Json::encode($object);
-        Yii::$app->response->send();
-
-        Yii::$app->end();
+        $this->SendJsonResponse($result);
     }
 }
