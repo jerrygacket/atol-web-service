@@ -47,10 +47,11 @@ class MainController extends Controller
                 'class' => Cors::class,
                 'cors' => [
                     'Origin' => ['*'],
-                    'Access-Control-Request-Method' => ['POST','GET', 'HEAD', 'OPTIONS'],
+                    'Access-Control-Request-Method' => ['POST','GET', 'HEAD', 'OPTIONS', 'DELETE', 'PUT', 'PATCH'],
                     'Access-Control-Allow-Credentials' => false,
-                    'Access-Control-Max-Age' => 3600,
+                    'Access-Control-Max-Age' => 86400,
                     'Access-Control-Request-Headers' => ['*'],
+                    'Access-Control-Allow-Headers' => ['*'],
                     'Access-Control-Expose-Headers' => [],
                     'Access-Control-Allow-Origin' => ['*'],
 
