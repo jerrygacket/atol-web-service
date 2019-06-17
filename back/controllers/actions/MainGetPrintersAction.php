@@ -13,7 +13,7 @@ class MainGetPrintersAction extends BasicAction
 
     public function run()
     {
-        $result = ['error' => true,];
+        $result = ['error' => true,'message' => 'Wrong request'];
 
         if (Yii::$app->request->isGet && array_key_exists('info', Yii::$app->request->queryParams)) {
             if (array_key_exists('printer_id', Yii::$app->request->queryParams['info'])) {
@@ -25,6 +25,7 @@ class MainGetPrintersAction extends BasicAction
             $result = [
                 'result' => $printers,
                 'error' => false,
+                'message' => '',
             ];
         }
 

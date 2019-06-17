@@ -44,21 +44,24 @@ class PrinterComponent extends BasicComponent
      */
     public function openShift($params) {
         $model = $this->getModel();
-        $model->load($params);
+        $model->load($params['info']['printer_id']);
+        $result = $model->openShift($params['info']['operator']);
 
-        return false;
+        return $result;
     }
 
     public function closeShift($params) {
         $model = $this->getModel();
-        $model->load($params);
+        $model->load($params['info']['printer_id']);
+        $result = $model->closeShift();
 
-        return false;
+        return $result;
     }
 
     public function printSellReceipt($params) {
         $model = $this->getModel();
-        $model->load($params);
+        $model->load($params['info']['printer_id']);
+        $result = $model->printSellReceipt($params['']);
 
         return false;
     }
