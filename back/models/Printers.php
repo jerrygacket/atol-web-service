@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+
 use function print_r;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -41,6 +42,8 @@ class Printers extends PrintersBase
         ]);
         $this->timeout = 30; //seconds
         //TODO: get timeout from config
+
+
     }
 
     public function behaviors()
@@ -97,6 +100,7 @@ class Printers extends PrintersBase
         $response = $this->client->createRequest()
             ->setMethod('GET')
             ->setUrl($uri)
+            ->addHeaders(['Content-Type' => 'application/json'])
             ->setData($data)
             ->send();
         if (!$response->isOk) {
@@ -118,7 +122,8 @@ class Printers extends PrintersBase
         $response = $this->client->createRequest()
             ->setMethod('POST')
             ->setUrl('/requests')
-            ->setData(['json' => $data])
+            ->addHeaders(['Content-Type' => 'application/json'])
+            ->setData($data)
             ->send();
         if (!$response->isOk) {
             return false;
@@ -135,15 +140,14 @@ class Printers extends PrintersBase
      * @throws \yii\base\InvalidConfigException
      */
     private function checkTaskStatus($uuid) {
-        $response = $this->getData('/requests/'.$uuid);
         $ready = false;
         $counter = 0;
         while (!$ready) {
             $response = $this->getData('/requests/'.$uuid);
             $ready = ($response['results'][0]['status'] == 'ready');
+            sleep(1);
             $counter++;
             if ($counter > $this->timeout) {break;} //ждем 30 секунд и типа отваливаемся по таймауту
-            sleep(1);
         }
         if (!$ready) {
             return ['error' => 'Timeout'];
@@ -168,8 +172,33 @@ class Printers extends PrintersBase
         $response = $this->postData($task);
         Yii::debug('--- isShiftOpen'.PHP_EOL.print_r($response,true));
         $response = $this->checkTaskStatus($newId);
+        Yii::debug('--- checkTaskStatus'.PHP_EOL.print_r($response,true));
 
         return (($response['results'][0]['result']['shiftStatus']['state'] ?? '') == 'opened');
+    }
+
+    // Запрос состояния ККТ
+    function checkKKT() {
+        $newId =  $this->gen_uuid();
+        $task = array('uuid' => $newId, 'request' => array('type' => 'getDeviceStatus'));
+        $response = $this->postData($task);
+        Yii::debug('--- getDeviceStatus'.PHP_EOL.print_r($response,true));
+        $response = $this->checkTaskStatus($newId);
+        return $response;
+    }
+
+    /**
+     * Запрос состояния
+     *
+     * @return bool
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\ExitException
+     */
+    function status() {
+        $response = $this->getData('/stat/requests');
+        Yii::debug('--- status'.PHP_EOL.print_r($response,true));
+
+        return ($response);
     }
 
     //Открытие смены

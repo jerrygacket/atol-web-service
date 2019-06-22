@@ -4,6 +4,7 @@
 namespace app\base;
 
 
+use Yii;
 use yii\base\Component;
 
 class BasicComponent extends Component
@@ -16,9 +17,5 @@ class BasicComponent extends Component
         if (empty($this->nameClass)){
             throw new \Exception('no ClassName');
         }
-    }
-
-    public function getModel() {
-        return new $this->nameClass;
     }
 }
