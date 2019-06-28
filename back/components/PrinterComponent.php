@@ -83,14 +83,15 @@ class PrinterComponent extends BasicComponent
     public function closeShift($model) {
         $result = false;
         if ($model->isShiftOpen()) {
-            $response = $model->closeShift();
-            if ($response) {
-//                $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'open');
-//                $result['connected'] = ($response['results'][0]['status'] == 'ready');
-                print_r($response);
-                Yii::$app->end();
-                $result = true;
-            }
+//            $response = $model->closeShift();
+//            if ($response) {
+////                $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'open');
+////                $result['connected'] = ($response['results'][0]['status'] == 'ready');
+//                print_r($response);
+//                Yii::$app->end();
+//                $result = true;
+//            }
+            return true;
         }
 
         return $result;
@@ -111,7 +112,7 @@ class PrinterComponent extends BasicComponent
     public function status($model) {
         $response = $model->checkKKT();
         if ($response) {
-            $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'open');
+            $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'opened');
             $result['connected'] = ($response['results'][0]['status'] == 'ready');
         } else {
             $result['error'] = 'Error while get status';
