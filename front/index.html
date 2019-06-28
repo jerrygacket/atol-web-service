@@ -123,7 +123,7 @@
 
   async function getGoods() {
     let goods = [];
-    await fetch('https://yiilessons.xyz/main/getGoods')
+    await fetch('https://atol.fdp/main/getGoods')
       .then((response) => response.json())
       .then((data) => {
         goods = data.result;
@@ -153,7 +153,7 @@
 
   async function printConnect() {
     let isConnect = false;
-    await fetch('https://yiilessons.xyz/main/status')
+    await fetch('https://atol.fdp/main/status')
       .then(response => response.json())
       .then((data) => {
         if (!data.error) isConnect = true;
@@ -171,7 +171,7 @@
 
   async function getPrinters() {
     let printers = [];
-    await fetch('https://yiilessons.xyz/main/getPrinters?info[user_id]=some_id', {
+    await fetch('https://atol.fdp/main/getPrinters?info[user_id]=some_id', {
       method: 'GET'
     })
       .then(response => response.json())
@@ -185,19 +185,19 @@
 
 
 
-  fetch('https://yiilessons.xyz/main/print', { method: 'POST' })
+  fetch('https://atol.fdp/main/print', { method: 'POST' })
     .then(response => response.json())
     .then((data) => {
       console.log('print', data);
     }).catch((error) => console.log(error));
   //
-  fetch('https://yiilessons.xyz/main/openShift', { method: 'POST' })
+  fetch('https://atol.fdp/main/openShift', { method: 'POST' })
     .then(response => response.json())
     .then((data) => {
       console.log('openShift', data);
     });
 
-  fetch('https://yiilessons.xyz/main/closeShift', { method: 'POST' })
+  fetch('https://atol.fdp/main/closeShift', { method: 'POST' })
     .then(response => response.json())
     .then((data) => {
       console.log('closeShift', data);

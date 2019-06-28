@@ -173,8 +173,10 @@ class Printers extends PrintersBase
         Yii::debug('--- isShiftOpen'.PHP_EOL.print_r($response,true));
         $response = $this->checkTaskStatus($newId);
         Yii::debug('--- checkTaskStatus'.PHP_EOL.print_r($response,true));
+        print_r($response);
+        Yii::$app->end();
 
-        return (($response['results'][0]['result']['shiftStatus']['state'] ?? '') == 'opened');
+//        return (($response['results'][0]['result']['shiftStatus']['state'] ?? '') == 'opened');
     }
 
     // Запрос состояния ККТ
@@ -184,6 +186,7 @@ class Printers extends PrintersBase
         $response = $this->postData($task);
         Yii::debug('--- getDeviceStatus'.PHP_EOL.print_r($response,true));
         $response = $this->checkTaskStatus($newId);
+
         return $response;
     }
 
