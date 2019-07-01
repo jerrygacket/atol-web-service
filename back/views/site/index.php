@@ -2,7 +2,7 @@
 
 /* @var $this yii\web\View */
 
-$this->title = 'My Yii Application';
+$this->title = 'ATOL PrintServer';
 ?>
 <div class="container-fluid">
     <div class="container">
@@ -64,37 +64,36 @@ $this->title = 'My Yii Application';
 </div>
 
 <script>
-    if (document.cookie.replace(/(?:(?:^|.*;\s*)connected\s*\=\s*([^;]*).*$)|^.*$/, "$1") !== "true") {
+    if (getCookie("connected") !== "true") {
         document.getElementById('buttons').hidden = true;
         document.getElementById('printing').hidden = true;
     }
-    if (document.cookie.replace(/(?:(?:^|.*;\s*)shift_opened\s*\=\s*([^;]*).*$)|^.*$/, "$1") !== "true") {
-        document.getElementById('shiftStatus').innerHTML = "закрыта";
-    } else {
-        document.getElementById('shiftStatus').innerHTML = "открыта";
-    }
 
+    // document.getElementById('shiftStatus').innerHTML = (getCookie("shift_opened") === "true") ? "открыта" : "закрыта";
+    document.getElementById('shiftStatus').innerHTML = (getCookie("shift_opened") === "true") ? (
+        document.getElementById('printCloseShift').disabled = false,
+        document.getElementById('printOpenShift').disabled = true,
+        "открыта"
+    ) : (
+        document.getElementById('printCloseShift').disabled = true,
+        document.getElementById('printOpenShift').disabled = false,
+        "закрыта"
+    );
 
     let printersList = false;
     [...document.getElementsByClassName('valid-name')].forEach(el => {
         el.addEventListener('change', async () => {
-            // let name = document.getElementById('name').value.trim();
-            // let surname = document.getElementById('surname').value.trim();
-            // if (name.length && surname.length) {
-            //     document.getElementById('FormPrinterSelect').disabled = false;
-            //     document.getElementById('printConnect').disabled = false;
-                if (!printersList) {
-                    let printers;
-                    printers = await getPrinters();
-                    printers.forEach(el => {
-                        let option = document.createElement('option');
-                        option.textContent = el.printer_name;
-                        option.value = el.printer_id;
-                        document.getElementById('FormPrinterSelect').appendChild(option);
-                    });
-                    printersList = true;
-                }
-            // }
+            if (!printersList) {
+                let printers;
+                printers = await getPrinters();
+                printers.forEach(el => {
+                    let option = document.createElement('option');
+                    option.textContent = el.printer_name;
+                    option.value = el.printer_id;
+                    document.getElementById('FormPrinterSelect').appendChild(option);
+                });
+                printersList = true;
+            }
         });
     });
 
@@ -120,13 +119,13 @@ $this->title = 'My Yii Application';
 
         if (printerStatus.error) {
             alert(printerStatus.message);
-            document.cookie = "printerConnected=; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+            setCookie("connected","",0.5);
         }  else {
             document.getElementById('shiftStatus').innerHTML = printerStatus.result.shift_open ? "открыта" : "закрыта";
             document.getElementById('buttons').hidden = false;
             document.getElementById('printing').hidden = false;
-            document.cookie = "connected=true; expires=Fri, 31 Dec 9999 23:59:59 GMT";
-            document.cookie = "shift_opened="+printerStatus.result.shift_open+"; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+            setCookie("connected","true",0.5);
+            setCookie("shift_opened",printerStatus.result.shift_open,0.5);
         }
 
 
@@ -231,23 +230,28 @@ $this->title = 'My Yii Application';
         document.getElementById('connectInfo').innerHTML = "Принтеры: ";
     });
 
-    //fetch('https://atol.fdp/main/print', { method: 'POST' })
-    //.then(response => response.json())
-    //.then((data) => {
-    //console.log('print', data);
-    //}).catch((error) => console.log(error));
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*1*60*60*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
 
-    //fetch('https://atol.fdp/main/openShift', { method: 'POST' })
-    //.then(response => response.json())
-    //.then((data) => {
-    //console.log('openShift', data);
-    //});
-
-    //fetch('https://atol.fdp/main/closeShift', { method: 'POST' })
-    //.then(response => response.json())
-    //.then((data) => {
-    //console.log('closeShift', data);
-    //}).catch((error) => console.log(error));
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
 
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
