@@ -93,6 +93,7 @@
   document.getElementById('FormPrinterSelect').disabled = true;
   document.getElementById('printConnect').disabled = true;
   let printersList = false;
+  let currentPrinters = [];
   [...document.getElementsByClassName('valid-name')].forEach(el => {
     el.addEventListener('change', async () => {
       let name = document.getElementById('name').value.trim();
@@ -102,11 +103,12 @@
         document.getElementById('printConnect').disabled = false;
         document.getElementById('operatorInfo').textContent = `${name} ${surname}`;
         if (!printersList) {
-          let printers;
-          printers = await getPrinters();
-          printers.forEach(el => {
+          currentPrinters = await getPrinters();
+          currentPrinters.forEach(el => {
             let option = document.createElement('option');
             option.textContent = el.printer_name;
+            option.setAttribute('printer-id', el.printer_id);
+            option.id = el.printer_name;
             document.getElementById('FormPrinterSelect').appendChild(option);
           });
           printersList = true;
@@ -123,7 +125,7 @@
 
   async function getGoods() {
     let goods = [];
-    await fetch('https://yiilessons.xyz/main/getGoods')
+    await fetch('https://atol.fdp/main/getGoods')
       .then((response) => response.json())
       .then((data) => {
         goods = data.result;
@@ -152,8 +154,13 @@
   }
 
   async function printConnect() {
+    let id = document.getElementById('FormPrinterSelect').value;
+    let printer_id = document.getElementById(id).getAttribute('printer-id');
+    let currentPrinter = currentPrinters.filter((el) => el.printer_id === printer_id);
+    console.log(...currentPrinter);
+
     let isConnect = false;
-    await fetch('https://yiilessons.xyz/main/status')
+    await fetch('https://atol.fdp/main/status')
       .then(response => response.json())
       .then((data) => {
         if (!data.error) isConnect = true;
@@ -171,7 +178,7 @@
 
   async function getPrinters() {
     let printers = [];
-    await fetch('https://yiilessons.xyz/main/getPrinters?info[user_id]=some_id', {
+    await fetch('https://atol.fdp/main/getPrinters?info[user_id]=some_id', {
       method: 'GET'
     })
       .then(response => response.json())
@@ -185,19 +192,19 @@
 
 
 
-  fetch('https://yiilessons.xyz/main/print', { method: 'POST' })
+  fetch('https://atol.fdp/main/print', { method: 'POST' })
     .then(response => response.json())
     .then((data) => {
       console.log('print', data);
     }).catch((error) => console.log(error));
   //
-  fetch('https://yiilessons.xyz/main/openShift', { method: 'POST' })
+  fetch('https://atol.fdp/main/openShift', { method: 'POST' })
     .then(response => response.json())
     .then((data) => {
       console.log('openShift', data);
     });
 
-  fetch('https://yiilessons.xyz/main/closeShift', { method: 'POST' })
+  fetch('https://atol.fdp/main/closeShift', { method: 'POST' })
     .then(response => response.json())
     .then((data) => {
       console.log('closeShift', data);

@@ -111,7 +111,7 @@ $this->title = 'My Yii Application';
 
     async function getStatus() {
         let printerId = document.getElementById('FormPrinterSelect').value;
-        await fetch(document.URL+'/main/status?info[printer_id]='+printerId)
+        await fetch('http://atol.fdp/main/status?info[printer_id]='+printerId)
             .then((response) => response.json())
             .then((data) => {
                 printerStatus = data;
@@ -120,7 +120,7 @@ $this->title = 'My Yii Application';
 
         if (printerStatus.error) {
             alert(printerStatus.message);
-            document.cookie = "printerConnected=; expires=3600";
+            document.cookie = "printerConnected=; expires=Fri, 31 Dec 9999 23:59:59 GMT";
         }  else {
             document.getElementById('shiftStatus').innerHTML = printerStatus.result.shift_open ? "открыта" : "закрыта";
             document.getElementById('buttons').hidden = false;
@@ -202,7 +202,7 @@ $this->title = 'My Yii Application';
 
     async function getPrinters() {
         let printers = [];
-        await fetch(document.URL+'/main/getPrinters?info[user_id]=some_id', {
+        await fetch('http://atol.fdp/main/getPrinters?info[user_id]=some_id', {
             method: 'GET'
         })
             .then(response => response.json())
@@ -231,12 +231,23 @@ $this->title = 'My Yii Application';
         document.getElementById('connectInfo').innerHTML = "Принтеры: ";
     });
 
-    function setCookie(cname, cvalue, exdays) {
-        var d = new Date();
-        d.setTime(d.getTime() + (exdays*1*60*60*1000));
-        var expires = "expires="+ d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-    }
+    //fetch('https://atol.fdp/main/print', { method: 'POST' })
+    //.then(response => response.json())
+    //.then((data) => {
+    //console.log('print', data);
+    //}).catch((error) => console.log(error));
+
+    //fetch('https://atol.fdp/main/openShift', { method: 'POST' })
+    //.then(response => response.json())
+    //.then((data) => {
+    //console.log('openShift', data);
+    //});
+
+    //fetch('https://atol.fdp/main/closeShift', { method: 'POST' })
+    //.then(response => response.json())
+    //.then((data) => {
+    //console.log('closeShift', data);
+    //}).catch((error) => console.log(error));
 
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
