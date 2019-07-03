@@ -12,6 +12,8 @@ use yii\web\Controller;
 
 class DemoController extends Controller
 {
+    public $enableCsrfValidation = false;
+
     public function actions()
     {
         return [
@@ -21,6 +23,7 @@ class DemoController extends Controller
             'closeShift'=>['class'=>DemoCloseShiftAction::class],
         ];
     }
+
     public function actionIndex() {
         return $this->render('index');
     }

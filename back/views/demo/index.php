@@ -49,13 +49,13 @@ $this->title = 'ATOL PrintServer Demo';
                     <div class="col-lg-6">
                         <h2>Все товары</h2>
                         <select size="9" id="allGoods" multiple>
-                            <option>Товар 1</option>
-                            <option>Товар 2</option>
-                            <option>Товар 3</option>
-                            <option>Товар 4</option>
-                            <option>Товар 5</option>
-                            <option>Товар 6</option>
-                            <option>Товар 7</option>
+                            <option value="1">Товар 1</option>
+                            <option value="2">Товар 2</option>
+                            <option value="3">Товар 3</option>
+                            <option value="4">Товар 4</option>
+                            <option value="5">Товар 5</option>
+                            <option value="6">Товар 6</option>
+                            <option value="7">Товар 7</option>
                         </select>
                         <br>
                         <button class="btn btn-primary" id="addToReceipt">Добавить в чек</button> <br>
@@ -65,7 +65,12 @@ $this->title = 'ATOL PrintServer Demo';
                         <select size="9" id="printGoods" multiple>
                         </select>
                         <br>
-                        <button class="btn btn-primary" id="delFromReceipt">Убрать из чека</button> <br>
+                        <button class="btn btn-primary" id="delFromReceipt">Убрать из чека</button>
+                        <button class="btn btn-success" id="printReceipt" >Печать</button>
+                        <br>
+                        <div id="printResult" class="alert">
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -74,6 +79,7 @@ $this->title = 'ATOL PrintServer Demo';
 </div>
 
 <script>
+    checkGoodList();
     if (getCookie("connected") !== "true") {
         document.getElementById('buttons').hidden = true;
         document.getElementById('printing').hidden = true;
@@ -91,15 +97,88 @@ $this->title = 'ATOL PrintServer Demo';
     document.getElementById('printCloseShift').addEventListener('click', () => shift("close"));
     document.getElementById('addToReceipt').addEventListener('click', () => addGoods());
     document.getElementById('delFromReceipt').addEventListener('click', () => delGoods());
+    document.getElementById('printReceipt').addEventListener('click', () => printReceipt('sel'));
+
+    // receiptType: sel or return
+    async function printReceipt(receiptType) {
+        if (getCookie("shift_opened") !== "true") {
+            alert('Смена закрыта');
+            return;
+        }
+        if (document.getElementById('printGoods').children.length === 0) {
+            alert('Нет товаров');
+            return;
+        }
+
+        var goods = {};
+        for (let item of document.getElementById('printGoods').children) {
+            goods[item.value] = item.textContent;
+        }
+
+        var data = new FormData();
+        data.append( "json", JSON.stringify({
+            'goods': goods,
+            'type': receiptType
+        }) );
+
+        await fetch('http://atol.fdp/demo/print', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'goods': goods,
+                'type': receiptType
+            })
+        })
+        .then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+                return response
+            } else {
+                var error = new Error(response.statusText);
+                error.response = response;
+                throw error
+            }
+        })//response.json())
+        .then((response) => response.json())
+        .then((data) => {
+            printerStatus = data;
+            console.log(data);
+        }).catch((error) => console.log(error));
+        setPrintResult(printerStatus);
+    }
+
+    function setPrintResult(result) {
+        if (result.error) {
+            document.getElementById('printResult').classList.remove("alert-success");
+            document.getElementById('printResult').classList.add("alert-danger");
+            document.getElementById('printResult').innerHTML = result.message;
+            return;
+        }
+        document.getElementById('printResult').classList.remove("alert-danger");
+        document.getElementById('printResult').classList.add("alert-success");
+        document.getElementById('printResult').innerHTML =
+            'Товары: '+JSON.stringify(result.result.goods)+'<br>'
+            +'Тип чека: '+(result.result.type === 'sel' ? 'Продажа' : 'Возврат');
+    }
 
     function addGoods() {
         var selected = document.getElementById('allGoods').selectedOptions;
+        var added = document.getElementById('printGoods').children;
         for (let item of selected) {
+            for (let oneGood of added) {
+                if (item.value === oneGood.value) {
+                    alert('Товар '+oneGood.value+' уже добавлен');
+                    return;
+                }
+            }
             let option = document.createElement('option');
             option.textContent = item.textContent;
             option.value = item.value;
             document.getElementById('printGoods').appendChild(option);
         }
+        checkGoodList();
     }
 
     function delGoods() {
@@ -107,6 +186,11 @@ $this->title = 'ATOL PrintServer Demo';
         for (let item of selected) {
             document.getElementById('printGoods').removeChild(item);
         }
+        checkGoodList();
+    }
+
+    function checkGoodList() {
+        document.getElementById('printReceipt').disabled = (document.getElementById('printGoods').children.length === 0);
     }
 
     async function shift(action) {
