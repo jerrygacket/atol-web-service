@@ -2,6 +2,8 @@
 
 /* @var $this yii\web\View */
 
+use yii\helpers\Url;
+
 $this->title = 'ATOL PrintServer';
 ?>
 <div class="container-fluid">
@@ -64,6 +66,7 @@ $this->title = 'ATOL PrintServer';
 </div>
 
 <script>
+    var baseUri = '<?php echo Url::base(true);?>';
     if (getCookie("connected") !== "true") {
         document.getElementById('buttons').hidden = true;
         document.getElementById('printing').hidden = true;
@@ -110,7 +113,7 @@ $this->title = 'ATOL PrintServer';
 
     async function getStatus() {
         let printerId = document.getElementById('FormPrinterSelect').value;
-        await fetch('http://atol.fdp/main/status?info[printer_id]='+printerId)
+        await fetch(baseUri+'/main/status?info[printer_id]='+printerId)
             .then((response) => response.json())
             .then((data) => {
                 printerStatus = data;
@@ -153,7 +156,7 @@ $this->title = 'ATOL PrintServer';
 
     async function getGoods() {
         let goods = [];
-        await fetch('http://atol.fdp/main/getGoods')
+        await fetch(baseUri+'/main/getGoods')
             .then((response) => response.json())
             .then((data) => {
                 goods = data.result;
@@ -182,7 +185,7 @@ $this->title = 'ATOL PrintServer';
     async function printConnect() {
         let isConnect = false;
         let printerId = document.getElementById('FormPrinterSelect').value;
-        await fetch('http://atol.fdp/main/status?info[printer_id]='+printerId)
+        await fetch(baseUri+'/main/status?info[printer_id]='+printerId)
             .then(response => response.json())
             .then((data) => {
                 if (!data.error) isConnect = true;
@@ -201,7 +204,7 @@ $this->title = 'ATOL PrintServer';
 
     async function getPrinters() {
         let printers = [];
-        await fetch('http://atol.fdp/main/getPrinters?info[user_id]=some_id', {
+        await fetch(baseUri+'/main/getPrinters?info[user_id]=some_id', {
             method: 'GET'
         })
             .then(response => response.json())

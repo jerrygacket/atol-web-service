@@ -2,6 +2,7 @@
 
 /* @var $this yii\web\View */
 
+use yii\helpers\Url;
 use yii\web\View;
 
 $this->title = 'ATOL PrintServer Demo';
@@ -79,6 +80,7 @@ $this->title = 'ATOL PrintServer Demo';
 </div>
 
 <script>
+    var baseUri = '<?php echo Url::base(true);?>';
     checkGoodList();
     if (getCookie("connected") !== "true") {
         document.getElementById('buttons').hidden = true;
@@ -121,7 +123,7 @@ $this->title = 'ATOL PrintServer Demo';
             'type': receiptType
         }) );
 
-        await fetch('http://atol.fdp/demo/print', {
+        await fetch(baseUri+'/demo/print', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -194,7 +196,7 @@ $this->title = 'ATOL PrintServer Demo';
     }
 
     async function shift(action) {
-        var actionUrl = 'http://atol.fdp/demo/'+action+'Shift?demo=true';
+        var actionUrl = baseUri+'/demo/'+action+'Shift?demo=true';
         await fetch(actionUrl)
             .then((response) => response.json())
             .then((data) => {
@@ -212,7 +214,7 @@ $this->title = 'ATOL PrintServer Demo';
     }
 
     async function getStatus() {
-        await fetch('http://atol.fdp/demo/status?demo=true')
+        await fetch(baseUri+'/demo/status?demo=true')
             .then((response) => response.json())
             .then((data) => {
                 printerStatus = data;
