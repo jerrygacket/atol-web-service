@@ -1,2 +1,1 @@
-# Hello world
-it's last edition
+Новый ридми
