@@ -10,6 +10,7 @@ $db = file_exists(__DIR__ . '/db_local.php')
 
 $config = [
     'id' => 'basic',
+    'name' => 'ATOL PrintServer',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [
