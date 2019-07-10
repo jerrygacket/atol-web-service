@@ -15,11 +15,12 @@ class MainGetPrintersAction extends BasicAction
     public function run()
     {
         $result = ['error' => true,'message' => 'Wrong request'];
+        $data = json_decode(Yii::$app->request->getRawBody(),true);
 
-        if (Yii::$app->request->isGet && array_key_exists('info', Yii::$app->request->queryParams)) {
+        if (Yii::$app->request->isPost && array_key_exists('user_id', $data)) {
             $component = Yii::createObject(['class' => PrinterComponent::class,'nameClass'=>'\app\models\Printers']);
-            $model = $component->getModel(Yii::$app->request->queryParams);
-            if (array_key_exists('printer_id', Yii::$app->request->queryParams['info'])) {
+            $model = $component->getModel($data);
+            if (array_key_exists('printer_id', $data)) {
                 $printers = $component->getOne($model);
             } else {
                 $printers = $component->getAll($model);

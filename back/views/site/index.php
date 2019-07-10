@@ -2,8 +2,6 @@
 
 /* @var $this yii\web\View */
 
-use yii\helpers\Url;
-
 $this->title = 'ATOL PrintServer';
 ?>
 <div class="container-fluid">
@@ -15,10 +13,11 @@ $this->title = 'ATOL PrintServer';
             <form>
                 <div class="row">
                     <div class="col-md-4 col-12" id="connectInfo">
-                        Загружаем список принтеров
+                        Принтеры:
                     </div>
                     <div class="col-md-4 col-12">
                         <select class="form-control" id="FormPrinterSelect">
+                            
                         </select>
                     </div>
                     <div class="col-md-4 col-12">
@@ -43,21 +42,31 @@ $this->title = 'ATOL PrintServer';
         <section id="printing" style="margin-bottom:80px;">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-4">
-                        <h2>Чек прихода</h2>
-                        <input type="text" placeholder="Номер заказа" id="order_income">
-                        <button class="btn btn-primary" id="check_income"> Проверить</button> <br>
-                        <div id="checkres_income" style="margin-top:20px;"></div>
-                        <button class="btn btn-success" id="print_income" style="visibility:hidden"> Печать чека</button>
-                        <div id="printres_income" style="margin-top:20px;"></div>
+                    <div class="col-lg-6">
+                        <h2>Все товары</h2>
+                        <select size="9" id="allGoods" multiple>
+                            <option value="1">Товар 1</option>
+                            <option value="2">Товар 2</option>
+                            <option value="3">Товар 3</option>
+                            <option value="4">Товар 4</option>
+                            <option value="5">Товар 5</option>
+                            <option value="6">Товар 6</option>
+                            <option value="7">Товар 7</option>
+                        </select>
+                        <br>
+                        <button class="btn btn-primary" id="addToReceipt">Добавить в чек</button> <br>
                     </div>
-                    <div class="col-lg-4">
-                        <h2>Чек возврата</h2>
-                        <input type="text" placeholder="Номер заказа" id="order_return">
-                        <button class="btn btn-primary" id="check_return"> Проверить</button>
-                        <div id="checkres_return" style="margin-top:20px;"></div>
-                        <button class="btn btn-success" id="print_return" style="visibility:hidden"> Печать чека</button>
-                        <div id="printres_return" style="margin-top:20px;"></div>
+                    <div class="col-lg-6">
+                        <h2>Товары в чеке</h2>
+                        <select size="9" id="printGoods" multiple>
+                        </select>
+                        <br>
+                        <button class="btn btn-primary" id="delFromReceipt">Убрать из чека</button>
+                        <button class="btn btn-success" id="printReceipt" >Печать</button>
+                        <br>
+                        <div id="printResult" class="alert">
+
+                        </div>
                     </div>
                 </div>
             </div>

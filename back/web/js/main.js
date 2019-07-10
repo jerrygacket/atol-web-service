@@ -1,24 +1,25 @@
 let baseUri = window.location.origin;
 
 let controller = window.location.pathname.split( '/' )[1];
-if (controller === '') {
+if (controller !== 'demo') {
     controller = 'main';
 }
 
+getPrinters();
 
 checkGoodList();
 
-if (getCookie("connected") !== "true") {
-    document.getElementById('buttons').hidden = true;
-    document.getElementById('printing').hidden = true;
-}
+// if (getCookie("connected") !== "true") {
+//     document.getElementById('buttons').hidden = true;
+//     document.getElementById('printing').hidden = true;
+// }
 
-setShiftStatusResult(getCookie("shift_opened") === "true");
+// setShiftStatusResult(getCookie("shift_opened") === "true");
 
 
 document.getElementById('printConnect').addEventListener('click', (e) => {
     e.preventDefault();
-    getStatus();
+    getStatus(document.getElementById('FormPrinterSelect').value);
 });
 
 document.getElementById('printOpenShift').addEventListener('click', () => shift("open"));

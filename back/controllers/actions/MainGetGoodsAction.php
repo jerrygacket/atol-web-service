@@ -14,7 +14,7 @@ class MainGetGoodsAction extends BasicAction
     {
         $result = ['error' => true,];
 
-        if (Yii::$app->request->isGet) {
+        if (Yii::$app->request->isPost) {
             //TODO: заменить на получение товаров из ДБ
             $goods = [];
             for ($i=0;$i<10;$i++) {

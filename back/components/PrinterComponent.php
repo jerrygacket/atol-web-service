@@ -21,7 +21,7 @@ class PrinterComponent extends BasicComponent
     public function getModel($params) {
         $model = new $this->nameClass(
             $this->nameClass::findOne(
-                ['printer_id' => ($params['info']['printer_id'] ?? '')]
+                ['printer_id' => ($params['printer_id'] ?? '')]
             )
         );
 
@@ -65,11 +65,11 @@ class PrinterComponent extends BasicComponent
         if (!$model->isShiftOpen()) {
             $response = $model->openShift();
             if ($response) {
-//                $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'open');
-//                $result['connected'] = ($response['results'][0]['status'] == 'ready');
-                print_r($response);
-                Yii::$app->end();
-                $result = true;
+                $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'open');
+                $result['connected'] = ($response['results'][0]['status'] == 'ready');
+//                print_r($response);
+//                Yii::$app->end();
+//                $result = true;
             }
         }
 
