@@ -2,9 +2,6 @@
 
 /* @var $this yii\web\View */
 
-use yii\helpers\Url;
-use yii\web\View;
-
 $this->title = 'ATOL PrintServer Demo';
 ?>
 <div class="container-fluid">

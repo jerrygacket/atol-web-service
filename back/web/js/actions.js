@@ -1,6 +1,31 @@
+async function getPrinters() {
+    let printers = [];
+    let data = {'user_id':'some_id'};
+    await sendRequest('/'+controller+'/getPrinters', data, 'POST')
+        .then((response) =>  {
+            printerStatus = response;
+        }).catch((error) => console.log(error));
+
+    if (printerStatus.error) {
+        alert(printerStatus.message);
+    }  else {
+        setPrinterList(printerStatus.result);
+    }
+}
+
 async function shift(action) {
+    var printer_id = getCookie('printer_id');
+    if (printer_id === '') {
+        alert('Не подключен принтер');
+        return;
+    }
+
     var actionUrl = '/'+controller+'/'+action+'Shift';
-    await sendRequest(actionUrl)
+    var data = {
+        'printer_id': printer_id,
+        'operator': 'Валитов Павел Рифатович'
+    };
+    await sendRequest(actionUrl,data)
         .then((response) =>  {
             printerStatus = response;
         }).catch((error) => console.log(error));
@@ -10,12 +35,18 @@ async function shift(action) {
     }  else {
         setCookie("shift_opened",printerStatus.result.shift_open,0.5);
         setCookie("connected",printerStatus.result.connected,0.5);
+        setCookie("printer_id",printerStatus.result.printer_id,0.5);
         setShiftStatusResult(printerStatus.result.shift_open);
     }
 }
 
-async function getStatus() {
-    await sendRequest('/'+controller+'/status')
+async function getStatus(printer_id = '') {
+    let data = {
+        'user_id':'some_id',
+        'printer_id': printer_id
+    };
+    console.log(data);
+    await sendRequest('/'+controller+'/status',data)
         .then((response) => {
             printerStatus = response;
         }).catch((error) => console.log(error));
@@ -27,6 +58,7 @@ async function getStatus() {
         console.log(printerStatus);
         setCookie("shift_opened",printerStatus.result.shift_open,0.5);
         setCookie("connected",printerStatus.result.connected,0.5);
+        setCookie("printer_id",printerStatus.result.printer_id,0.5);
         setShiftStatusResult(printerStatus.result.shift_open);
         document.getElementById('buttons').hidden = printerStatus.result.connected === 'false';
         document.getElementById('printing').hidden = printerStatus.result.connected === 'false';

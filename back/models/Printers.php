@@ -26,6 +26,7 @@ class Printers extends PrintersBase
 {
     public $client;
     public $timeout;
+    public $operator;
 
     public function __construct($config = [])
     {
@@ -156,7 +157,7 @@ class Printers extends PrintersBase
         return $response;
     }
 
-    /**
+     /**
      * Запрос состояния смены
      *
      * @return bool
@@ -205,11 +206,11 @@ class Printers extends PrintersBase
     }
 
     //Открытие смены
-    public function openShift(string $operator = '') {
+    public function openShift() {
         if ($this->isShiftOpen()) {
             return ['error' => 'Shift is open'];
         }
-        if ($operator == '') {
+        if ($this->operator == '') {
             return ['error' => 'No operator'];
         }
 
@@ -285,6 +286,14 @@ class Printers extends PrintersBase
         $response = $this->checkStatus($newId);
 
         return $response;
+    }
+
+    public function getPrinterId() {
+        return $this->printer_id;
+    }
+
+    public function setOperator(string $operator = '') {
+        $this->operator = $operator;
     }
 
 }

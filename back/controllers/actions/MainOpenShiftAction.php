@@ -18,11 +18,13 @@ class MainOpenShiftAction extends BasicAction
     public function run()
     {
         $result = ['error' => true,'message'=>'Bad request'];
+        $data = json_decode(Yii::$app->request->getRawBody(),true);
 
         if (Yii::$app->request->isPost) {
             $component = Yii::createObject(['class' => PrinterComponent::class,'nameClass'=>'\app\models\Printers']);
-            $model = $component->getModel(Yii::$app->request->queryParams);
+            $model = $component->getModel($data);
             if ($model->connect_string !='') {
+                $model->setOperator($data['operator']);
                 if ($component->openShift($model)) {
                     $response = $component->status($model);
                     if (array_key_exists('error', $response)) {
@@ -32,6 +34,7 @@ class MainOpenShiftAction extends BasicAction
                             'result' => [
                                 'connected' => $response['connected'],
                                 'shift_open' => $response['shift_open'],
+                                'printer_id' => $model->getPrinterId(),
                             ],
                             'error' => false,
                         ];

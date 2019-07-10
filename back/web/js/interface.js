@@ -1,3 +1,23 @@
+function clearList(select) {
+    var length = select.options.length;
+    for (i = 0; i < length; i++) {
+        select.options[i] = null;
+    }
+}
+
+function setPrinterList(printers) {
+    if (printers.length === 0) {
+        return;
+    }
+    clearList(document.getElementById('FormPrinterSelect'));
+    printers.forEach(el => {
+        let option = document.createElement('option');
+        option.textContent = el.printer_name;
+        option.value = el.printer_id;
+        document.getElementById('FormPrinterSelect').appendChild(option);
+    });
+}
+
 function setShiftStatusResult(status) {
     document.getElementById('shiftStatus').innerHTML = (status) ? (
         document.getElementById('printCloseShift').disabled = false,

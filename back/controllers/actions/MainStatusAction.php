@@ -14,10 +14,11 @@ class MainStatusAction extends BasicAction
     public function run()
     {
         $result = ['error' => true,];
+        $data = json_decode(Yii::$app->request->getRawBody(),true);
 
-        if (Yii::$app->request->isGet) {
+        if (Yii::$app->request->isPost) {
             $component = Yii::createObject(['class' => PrinterComponent::class,'nameClass'=>'\app\models\Printers']);
-            $model = $component->getModel(Yii::$app->request->queryParams);
+            $model = $component->getModel($data);
             if ($model->connect_string !='') {
                 $response = $component->status($model);
 
@@ -28,6 +29,7 @@ class MainStatusAction extends BasicAction
                         'result' => [
                             'connected' => $response['connected'],
                             'shift_open' => $response['shift_open'],
+                            'printer_id' => $model->getPrinterId(),
                         ],
                         'error' => false,
                     ];
