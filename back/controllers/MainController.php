@@ -9,6 +9,7 @@ use app\controllers\actions\MainGetGoodsAction;
 use app\controllers\actions\MainGetPrintersAction;
 use app\controllers\actions\MainOpenShiftAction;
 use app\controllers\actions\MainPrintReceiptAction;
+use app\controllers\actions\MainSavePrinterAction;
 use app\controllers\actions\MainStatusAction;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
@@ -27,6 +28,7 @@ class MainController extends Controller
             'status'=>['class'=>MainStatusAction::class],
             'openShift'=>['class'=>MainOpenShiftAction::class],
             'closeShift'=>['class'=>MainCloseShiftAction::class],
+            'savePrinter'=>['class'=>MainSavePrinterAction::class],
         ];
     }
 

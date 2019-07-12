@@ -7,6 +7,7 @@ namespace app\components;
 use app\base\BasicComponent;
 use app\models\Printers;
 use Yii;
+use yii\data\ActiveDataProvider;
 
 
 class PrinterComponent extends BasicComponent
@@ -28,12 +29,21 @@ class PrinterComponent extends BasicComponent
         return $model;
     }
 
+    public function getOldModel($params) {
+        $model = Printers::findOne($params['printer_id'] ?? '');
+
+        return $model;
+    }
+
+
     /**
      * @param $model Printers
      * @return mixed
      */
     public function getAll($model) {
-        return $model::find()->cache(10)->all();
+        return $model::find()
+            ->cache(10)
+            ->all();
     }
 
     /**
@@ -47,12 +57,17 @@ class PrinterComponent extends BasicComponent
             ->one();
     }
 
-    public function createPrinter(&$model):bool {
-        return false;
-    }
+    /**
+     * @param $model Printers
+     * @return bool
+     */
+    public function savePrinter(&$model):bool {
+        if (!$model->save(false)) {
+            $model->getErrors();
+            return false;
+        }
 
-    public function editPrinter(&$model):bool {
-        return false;
+        return true;
     }
 
     /**
@@ -62,15 +77,13 @@ class PrinterComponent extends BasicComponent
      */
     public function openShift($model) {
         $result = false;
-        if (!$model->isShiftOpen()) {
-            $response = $model->openShift();
-            if ($response) {
-                $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'open');
-                $result['connected'] = ($response['results'][0]['status'] == 'ready');
+        $response = $model->openShift();
+        if ($response) {
+            $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'open');
+            $result['connected'] = ($response['results'][0]['status'] == 'ready');
 //                print_r($response);
 //                Yii::$app->end();
 //                $result = true;
-            }
         }
 
         return $result;
@@ -82,16 +95,13 @@ class PrinterComponent extends BasicComponent
      */
     public function closeShift($model) {
         $result = false;
-        if ($model->isShiftOpen()) {
-//            $response = $model->closeShift();
-//            if ($response) {
-////                $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'open');
-////                $result['connected'] = ($response['results'][0]['status'] == 'ready');
-//                print_r($response);
-//                Yii::$app->end();
-//                $result = true;
-//            }
-            return true;
+        $response = $model->closeShift();
+        if ($response) {
+                $result['shift_open'] = ($response['results'][0]['result']['deviceStatus']['shift'] == 'open');
+                $result['connected'] = ($response['results'][0]['status'] == 'ready');
+//            print_r($response);
+//            Yii::$app->end();
+//            $result = true;
         }
 
         return $result;

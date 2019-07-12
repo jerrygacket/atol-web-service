@@ -22,8 +22,14 @@ async function sendRequest(url, data = {}) {
     await fetch(baseUri+url, requestFields)
         .then((response) => {
             if (response.status >= 200 && response.status < 300) {
-                console.log(response);
-                return response
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    return response;
+                } else {
+                    return response.text().then(text => {
+                        console.log(text);
+                    });
+                }
             } else {
                 var error = new Error(response.statusText);
                 error.response = response;

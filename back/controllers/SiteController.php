@@ -2,7 +2,10 @@
 
 namespace app\controllers;
 
+use app\components\PrinterComponent;
+use app\models\Printers;
 use Yii;
+use yii\bootstrap\ActiveForm;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -124,5 +127,15 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    /**
+     * Displays about page.
+     *
+     * @return string
+     */
+    public function actionSettings()
+    {
+        return $this->render('settings');
     }
 }

@@ -1,21 +1,26 @@
-function clearList(select) {
-    var length = select.options.length;
-    for (i = 0; i < length; i++) {
-        select.options[i] = null;
-    }
-}
+// function clearList(select) {
+//
+//
+// }
 
 function setPrinterList(printers) {
     if (printers.length === 0) {
         return;
     }
-    clearList(document.getElementById('FormPrinterSelect'));
+    // clearList(document.getElementById('FormPrinterSelect'));
+    while (document.getElementById('FormPrinterSelect').length > 0) {
+        document.getElementById('FormPrinterSelect').remove(document.getElementById('FormPrinterSelect').length - 1)
+    }
     printers.forEach(el => {
         let option = document.createElement('option');
         option.textContent = el.printer_name;
         option.value = el.printer_id;
         document.getElementById('FormPrinterSelect').appendChild(option);
     });
+}
+
+function setShiftAction(action) {
+    document.getElementById('shiftStatus').innerHTML = (action === 'open') ? "открываем..." : "закрываем...";
 }
 
 function setShiftStatusResult(status) {
@@ -72,4 +77,15 @@ function delGoods() {
         document.getElementById('printGoods').removeChild(item);
     }
     checkGoodList();
+}
+
+function setPrinterSettings(printers) {
+    if (printers.length === 0) {
+        return;
+    }
+    var elements = document.getElementById("settingsForm").elements;
+    elements.namedItem('printer_id').value = printers.printer_id;
+    elements.namedItem('printer_name').value = printers.printer_name;
+    elements.namedItem('description').value = printers.description;
+    elements.namedItem('connect_string').value = printers.connect_string;
 }
