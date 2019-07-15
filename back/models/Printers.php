@@ -61,6 +61,19 @@ class Printers extends PrintersBase
         ];
     }
 
+//    public function beforeSave($insert)
+//    {
+//        if (!parent::beforeSave($insert)) {
+//            return false;
+//        }
+//
+//        if ($this->printer_id == '') {
+//            $this->printer_id = $this->gen_uuid();
+//        }
+//
+//        return true;
+//    }
+
     /**
      * Generate uuid v4
      *
@@ -174,10 +187,10 @@ class Printers extends PrintersBase
         Yii::debug('--- isShiftOpen'.PHP_EOL.print_r($response,true));
         $response = $this->checkTaskStatus($newId);
         Yii::debug('--- checkTaskStatus'.PHP_EOL.print_r($response,true));
-        print_r($response);
-        Yii::$app->end();
+//        print_r($response);
+//        Yii::$app->end();
 
-//        return (($response['results'][0]['result']['shiftStatus']['state'] ?? '') == 'opened');
+        return (($response['results'][0]['result']['shiftStatus']['state'] ?? '') == 'opened');
     }
 
     // Запрос состояния ККТ
@@ -208,7 +221,7 @@ class Printers extends PrintersBase
     //Открытие смены
     public function openShift() {
         if ($this->isShiftOpen()) {
-            return ['error' => 'Shift is open'];
+            return $this->checkKKT();
         }
         if ($this->operator == '') {
             return ['error' => 'No operator'];
@@ -220,14 +233,15 @@ class Printers extends PrintersBase
             'request' => array(
                 'type' => 'openShift',
                 'operator' => array(
-                    'name' => $operator //Фамилия и должность оператора
+                    'name' => $this->operator //Фамилия и должность оператора
                     //'vatin' => '123654789507' //ИНН оператора
                 )
             )
         );
         $response = $this->postData($task);
         Yii::debug('--- openShift'.PHP_EOL.print_r($response,true));
-        $response = $this->checkStatus($newId);
+        sleep(3);
+        $response = $this->checkKKT($newId);
 
         return $response;
     }
@@ -235,7 +249,7 @@ class Printers extends PrintersBase
     //Закрытие смены
     public function closeShift() {
         if (!$this->isShiftOpen()) {
-            return ['error' => 'Shift is closed'];
+            return $this->checkKKT();
         }
 
         $newId = $this->gen_uuid();
@@ -247,7 +261,8 @@ class Printers extends PrintersBase
         );
         $response = $this->postData($task);
         Yii::debug('--- closeShift'.PHP_EOL.print_r($response,true));
-        $response = $this->checkStatus($newId);
+        sleep(3);
+        $response = $this->checkKKT($newId);
 
         return $response;
     }

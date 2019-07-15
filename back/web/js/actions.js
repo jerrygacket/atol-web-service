@@ -1,5 +1,4 @@
 async function getPrinters() {
-    let printers = [];
     let data = {'user_id':'some_id'};
     await sendRequest('/'+controller+'/getPrinters', data, 'POST')
         .then((response) =>  {
@@ -19,6 +18,8 @@ async function shift(action) {
         alert('Не подключен принтер');
         return;
     }
+
+    setShiftAction(action);
 
     var actionUrl = '/'+controller+'/'+action+'Shift';
     var data = {
@@ -92,4 +93,40 @@ async function printReceipt(receiptType) {
         }).catch((error) => console.log(error));
 
     setPrintResult(printerStatus);
+}
+
+async function savePrinter() {
+    var elements = document.getElementById("settingsForm").elements;
+
+    let data = {};
+    for (var i = 0, element; element = elements[i++];) {
+        console.log(element.name, element.value);
+        data[element.name] = element.value;
+    }
+    delete data['saveBtn'];
+    console.log(data);
+    await sendRequest('/'+controller+'/savePrinter', data, 'POST')
+        .then((response) => {
+            printerStatus = response;
+        }).catch((error) => console.log(error));
+
+    if (printerStatus.error) {
+        alert(printerStatus.message);
+    }  else {
+        location.reload();
+    }
+}
+
+async function loadSettings($printerId) {
+    let data = {'user_id':'some_id','printer_id': $printerId};
+    await sendRequest('/'+controller+'/getPrinters', data, 'POST')
+        .then((response) =>  {
+            printerStatus = response;
+        }).catch((error) => console.log(error));
+
+    if (printerStatus.error) {
+        alert(printerStatus.message);
+    }  else {
+        setPrinterSettings(printerStatus.result);
+    }
 }
